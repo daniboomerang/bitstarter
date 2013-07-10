@@ -1,9 +1,21 @@
 var express = require('express');
+var app = express();
+var fs = require('fs');
+var buffer = new Buffer(256);
 
-var app = express.createServer(express.logger());
+function readFile(filePath){
+console.log("enter to my readFile");
+  fs.readFile(filePath, function(err, buffer) {
+    if (err) throw err;
+console.log(buffer); 
+  })
+}
 
 app.get('/', function(request, response) {
-  response.send('Hello World2!');
+console.log("enter to app.get");
+  len = readFile('./index.html'); 
+console.log("len read:", len);
+  response.send(buffer.toString('utf8', 0, len));
 });
 
 var port = process.env.PORT || 5000;
