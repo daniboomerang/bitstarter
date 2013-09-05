@@ -124,8 +124,8 @@
       })();
     </script>
   </head>
-  <body>
 
+  <body>
     <!-- Mobile-friendly navbar adapted from example. -->
     <!-- http://twitter.github.io/bootstrap/examples/starter-template.html -->
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -174,16 +174,10 @@
       <div class="row-fluid pitch">
         <div class="span5 offset1 video">
           <a class="pull-left" href="#">
-            <!--<img class="media-object" src="https://www.youtube.com/channel/UChvBzMfIxDAD90MqunvjWeg">-->
-            <!--<iframe src="https://www.youtube.com/channel/UChvBzMfIxDAD90MqunvjWeg"; frameborder="0"> </iframe>-->
-            <!--<iframe src="https://www.youtube.com/channel/UChvBzMfIxDAD90MqunvjWeg"> </iframe>-->
-            <!--<embed src="http://youtu.be/hsTldS46WZo" type="application/x-shockwave-flash" width="480" height="300" allowscriptaccess="always" allowfullscreen="true">
-            -->            
-          </a>
-          <div class="video-container">         
-            <iframe width="480" height="315" src="http://www.youtube.com/embed/qI8rbIfAr10?feature=player_detailpage" frameborder="0" allowfullscreen></iframe>
+           <div class="video-container">         
+           <iframe width="480" height="315" src="http://www.youtube.com/embed/JOihwZ3WHPg?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
         </div>
-          <!-- <img class="img-polaroid" alt="Placeholder" src="http://placehold.it/480x300">-->
+          </a>
         </div>
 
         <!-- We define a new 'actions' div to contain statistics, order, and share buttons.-->
@@ -196,17 +190,23 @@
                 different in horizontal and vertical layouts, illustrating
                 media queries. -->
                 <div class="linediv-l">
-                <h3>0</h3> <p>backers</p>
+                  <div id="backers-num">
+                    <!-- AJAX call to refresh_backers_info -->  
+                  </div>
+                  <p>Backers<p>  
                 </div>
               </div>
               <div class="span4">
                 <div class="linediv-c">
-                  <h3>$0</h3> <p>of $10,000</p>
+                  <div id="backers-money">
+                  <!-- AJAX call to refresh_backers_info -->  
+                  </div>  
+                  <p>of $10,000</p>
                 </div>
               </div>
               <div class="span4">
                 <div class="linediv-r">
-                <h3>365</h3> <p>days left</p>
+                <h3>30</h3><p>days left</p>
                 </div>
               </div>
             </div>
@@ -224,7 +224,7 @@
           <div class="row-fluid">
           <div class="span6 offset3 order">
             <!-- BitCoin PAY Button BEGIN -->
-          <a class="coinbase-button" data-code="2dc7d8f84d0d85689235349592a70639" data-button-style="custom_small" href="https://coinbase.com/checkouts/2dc7d8f84d0d85689235349592a70639">Pay With Bitcoin</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
+              <a class="coinbase-button" data-code="2dc7d8f84d0d85689235349592a70639" data-button-style="custom_small" href="https://coinbase.com/checkouts/2dc7d8f84d0d85689235349592a70639">Pay With Bitcoin</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
             <!-- BitCoin PAY Button END -->
           </div>
           </div>
@@ -253,7 +253,7 @@
       <!-- http://placehold.it -->
       <div class="row-fluid section1">
         <div class="span5 offset1 asset">
-          <img class="img-polaroid"  alt="Placeholder" width="480" height="315" src="https://dl.dropboxusercontent.com/u/10722382/EverMusicPublic/spotifyAwesome.png">
+          <img class="img-polaroid"  alt="Placeholder" width="480" height="315" src="/img/spotifyAwesome.png">
         </div>
         <div class="span5 copy">
           <p class="lead"> <img class="img" src="https://developer.spotify.com/favicon.ico"> EverMusic & Spotify = Awesome</p>
@@ -286,7 +286,7 @@
             Grate tool!
         </div>
         <div class="span5 asset">
-          <img class="img-polaroid"  alt="Placeholder" width="480" height="315" src="https://dl.dropboxusercontent.com/u/10722382/EverMusicPublic/EvernotePowerful.png">
+          <img class="img-polaroid"  alt="Placeholder" width="480" height="315" src="/img/EvernotePowerful.png">
         </div>
       </div>
 
@@ -351,6 +351,28 @@
 
       ga('create', 'UA-42975836-1', 'heroku.com');
       ga('send', 'pageview');
-    </script>  
+    </script>     
+
+    <!-- AJAX refresh_backers_info -->
+    <script>
+      $.ajax({
+       url:"/refresh_backers_info",
+       success:function(backers_info){
+          var backers_num = backers_info.backers_num;
+          var backers_money = backers_info.backers_money;
+          var currency_EUR = (backers_money * 93.82).toFixed(2);
+          var currency_USD = (backers_money * 126.68).toFixed(2);
+          $('#backers-num').append("<h3>" + backers_num + "</h3>");
+          $('#backers-money').append("<h3>" + "$" + currency_USD + "</h3>");
+
+       },
+       error:function(){
+           alert("Error");
+       },
+      });
+    </script>
+    <!-- END AJAX refresh_backers_info -->
+
+
   </body>
 </html>

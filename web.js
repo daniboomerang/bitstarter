@@ -1,4 +1,4 @@
-// Define routes for simple SSJS web app. 
+// Define routes for web app. 
 // Writes Coinbase orders to database.
 var async   = require('async')
   , express = require('express')
@@ -12,13 +12,32 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || 8080);
 
-// Render homepage (note trailing slash): example.com/
+app.use(express.static('public'));
+
+// Render homepage (note trailing slash): evermusic.com/
 app.get('/', function(request, response) {
   var data = fs.readFileSync('index.html').toString();
   response.send(data);
 });
 
-// Render example.com/orders
+/* Service to retrieve the backers information 
+backers_info = {backers_num: orders_json.length, backers_money: totalMoney};
+*/
+app.get('/refresh_backers_info', function(request, response){ 
+    global.db.Order.findAll().success(function(orders) {
+      var orders_json = []; 
+      var totalMoney = 0;
+      orders.forEach(function(order) {
+        orders_json.push({id: order.coinbase_id, amount: order.amount, time: order.time});
+        totalMoney = totalMoney + order.amount  ;
+      });
+      var backers_info = [];
+      backers_info = {backers_num: orders_json.length, backers_money: totalMoney}; 
+      response.send(backers_info);
+    });
+});
+
+// Render evermusic.com/orders
 app.get('/orders', function(request, response) {
   global.db.Order.findAll().success(function(orders) {
     var orders_json = [];
@@ -26,14 +45,15 @@ app.get('/orders', function(request, response) {
       orders_json.push({id: order.coinbase_id, amount: order.amount, time: order.time});
     });
     // Uses views/orders.ejs
-    response.render("orders", {orders: orders_json});
+    // Uses views/orders.ejs
+    response.render("orders", {orders: orders_json});  
   }).error(function(err) {
     console.log(err);
     response.send("error retrieving orders");
   });
 });
 
-// Hit this URL while on example.com/orders to refresh
+// Hit this URL while on evermusic.com/orders to refresh
 app.get('/refresh_orders', function(request, response) {
   https.get("https://coinbase.com/api/v1/orders?api_key=" + process.env.COINBASE_API_KEY, function(res) {
     var body = '';
@@ -66,7 +86,6 @@ app.get('/refresh_orders', function(request, response) {
       response.send("error syncing orders");
     });
   });
-
 });
 
 // sync the database and start the server
